@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { OctagonAlertIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { FaGithub, FaGoogle } from 'react-icons/fa'
 
 import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/auth-client'
@@ -54,6 +55,27 @@ export const SignInView = () => {
         onSuccess: () => {
           setPending(false)
           router.push('/')
+        },
+        onError: ({ error }) => {
+          setPending(false)
+          setError(error.message)
+        },
+      },
+    )
+  }
+
+  const onSocial = (provider: 'github' | 'google') => {
+    setError(null)
+    setPending(true)
+
+    authClient.signIn.social(
+      {
+        provider: provider,
+        callbackURL: '/',
+      },
+      {
+        onSuccess: () => {
+          setPending(false)
         },
         onError: ({ error }) => {
           setPending(false)
@@ -116,7 +138,7 @@ export const SignInView = () => {
                 </div>
                 {!!error && (
                   <Alert className="bg-destructive/10 border-none">
-                    <OctagonAlertIcon className="h-4 w-4 !text-destructive" />
+                    <OctagonAlertIcon className="h-4 w-4 text-destructive!" />
                     <AlertTitle>{error}</AlertTitle>
                   </Alert>
                 )}
@@ -133,17 +155,19 @@ export const SignInView = () => {
                     disabled={pending}
                     variant="outline"
                     type="button"
-                    className="w-full"
+                    className="w-full cursor-pointer"
+                    onClick={() => onSocial('google')}
                   >
-                    Google
+                    <FaGoogle />
                   </Button>
                   <Button
                     disabled={pending}
                     variant="outline"
                     type="button"
-                    className="w-full"
+                    className="w-full cursor-pointer"
+                    onClick={() => onSocial('github')}
                   >
-                    Github
+                    <FaGithub />
                   </Button>
                 </div>
                 <div className="text-center text-sm">
